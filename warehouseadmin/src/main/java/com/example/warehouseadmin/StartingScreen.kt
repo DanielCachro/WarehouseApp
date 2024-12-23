@@ -60,7 +60,7 @@ fun StartingScreen(navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                onClick = { /* Handle action for smaller button 1 */ },
+                onClick = { navController.navigate(Routes.itemListScreen) },
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(50))

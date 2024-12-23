@@ -19,6 +19,7 @@ fun CustomOutlinedTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     label: String,
+    enabled: Boolean = true
 ) {
     val accentColor = colorResource(id = R.color.orange)
     OutlinedTextField(
@@ -38,6 +39,7 @@ fun CustomOutlinedTextField(
             unfocusedLabelColor = accentColor,
             focusedLabelColor = accentColor
         ),
-        shape = RoundedCornerShape(50)
+        shape = RoundedCornerShape(50),
+        enabled = enabled
     )
 }

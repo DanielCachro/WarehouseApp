@@ -5,8 +5,9 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavController
 
 @Composable
-fun AddItemScreen(navController: NavController) {
+fun UpdateItemScreen(navController: NavController, sku: String) {
     ItemFormHandler(
+        initialSku = sku,
         onSubmit = { item ->
             addToFirebase(
                 item = item,
