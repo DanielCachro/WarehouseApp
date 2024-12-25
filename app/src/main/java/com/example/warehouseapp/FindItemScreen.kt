@@ -41,7 +41,7 @@ fun FindItemScreen(
                 item = foundItem
             }, onFailure = { exception ->
                 isLoading = false
-                errorMessage = "Item not found."
+                errorMessage = exception.message ?: "Item not found."
             })
         } else {
             errorMessage = "Please enter an SKU to search."

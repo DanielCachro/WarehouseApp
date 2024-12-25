@@ -22,16 +22,19 @@ import androidx.navigation.NavController
 fun ItemListScreen(navController: NavController) {
     var items by remember { mutableStateOf<List<Item>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         getItemsFromFirebase(
             onSuccess = { fetchedItems ->
-                items = fetchedItems
+                items = fetchedItems.sortedBy { it.name }
                 errorMessage = null
+                isLoading = false
             },
             onFailure = { exception ->
                 errorMessage = "Error: ${exception.message}"
-                Log.e("ItemsListScreen", "Error when fetching item", exception)
+                Log.e("ItemListScreen", "Error when fetching items", exception)
+                isLoading = false
             }
         )
     }
@@ -40,23 +43,34 @@ fun ItemListScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage!!,
-                color = MaterialTheme.colorScheme.error,
-                fontSize = 18.sp
-            )
-        } else {
-            LazyColumn {
-                items(items) { item ->
-                    ItemRow(item = item)
+        when {
+            isLoading -> {
+                CircularProgressIndicator()
+            }
+            errorMessage != null -> {
+                Text(
+                    text = errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 18.sp
+                )
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    items(items) { item ->
+                        ItemRow(item = item)
+                    }
                 }
             }
         }
     }
 }
+
 
 
 @Composable

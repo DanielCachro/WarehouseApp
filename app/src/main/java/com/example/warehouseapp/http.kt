@@ -1,51 +1,72 @@
 package com.example.warehouseapp
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
+import android.os.Handler
+import android.os.Looper
+import com.google.firebase.database.*
 
 val database: FirebaseDatabase = FirebaseDatabase.getInstance()
 val itemsRef: DatabaseReference = database.getReference("items")
 
-fun getItemsFromFirebase(onSuccess: (List<Item>) -> Unit, onFailure: (Exception) -> Unit) {
-    itemsRef.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val items = mutableListOf<Item>()
+fun <T> fetchFromFirebase(
+    query: DatabaseReference,
+    timeoutMillis: Long = 5000,
+    parseSnapshot: (DataSnapshot) -> T?,
+    onSuccess: (T) -> Unit,
+    onFailure: (Exception) -> Unit
+) {
+    val timeoutHandler = Handler(Looper.getMainLooper())
+    var isCompleted = false
 
-            for (itemSnapshot in snapshot.children) {
-                val item = itemSnapshot.getValue<Item>()
-                if (item != null) {
-                    items.add(item)
+    val timeoutRunnable = Runnable {
+        if (!isCompleted) {
+            isCompleted = true
+            onFailure(Exception("Request timed out"))
+        }
+    }
+
+    timeoutHandler.postDelayed(timeoutRunnable, timeoutMillis)
+
+    query.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (!isCompleted) {
+                timeoutHandler.removeCallbacks(timeoutRunnable)
+                isCompleted = true
+
+                val result = parseSnapshot(snapshot)
+                if (result != null) {
+                    onSuccess(result)
+                } else {
+                    onFailure(Exception("No data found"))
                 }
             }
-            onSuccess(items)
         }
 
         override fun onCancelled(error: DatabaseError) {
-            onFailure(error.toException())
+            if (!isCompleted) {
+                timeoutHandler.removeCallbacks(timeoutRunnable)
+                isCompleted = true
+                onFailure(error.toException())
+            }
         }
     })
+}
+
+fun getItemsFromFirebase(onSuccess: (List<Item>) -> Unit, onFailure: (Exception) -> Unit) {
+    fetchFromFirebase(
+        query = itemsRef,
+        parseSnapshot = { snapshot ->
+            snapshot.children.mapNotNull { it.getValue<Item>() }
+        },
+        onSuccess = onSuccess,
+        onFailure = onFailure
+    )
 }
 
 fun getItemFromFirebaseBySku(sku: String, onSuccess: (Item) -> Unit, onFailure: (Exception) -> Unit) {
-    val itemRef: DatabaseReference = itemsRef.child(sku)
-
-    itemRef.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val item = snapshot.getValue<Item>()
-            if (item != null) {
-                onSuccess(item)
-            } else {
-                onFailure(Exception("Item not found"))
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            onFailure(error.toException())
-        }
-    })
+    fetchFromFirebase(
+        query = itemsRef.child(sku),
+        parseSnapshot = { it.getValue<Item>() },
+        onSuccess = onSuccess,
+        onFailure = onFailure
+    )
 }
-
