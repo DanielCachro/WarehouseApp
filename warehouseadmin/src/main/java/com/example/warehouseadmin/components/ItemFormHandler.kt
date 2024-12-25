@@ -1,4 +1,4 @@
-package com.example.warehouseadmin
+package com.example.warehouseadmin.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,8 +12,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.warehouseadmin.components.CustomOutlinedTextField
-import com.example.warehouseadmin.components.PrimaryButton
+import com.example.warehouseadmin.Item
+import com.example.warehouseadmin.R
+import com.example.warehouseadmin.getItemFromFirebaseBySku
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

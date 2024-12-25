@@ -59,3 +59,20 @@ fun getItemFromFirebaseBySku(sku: String, onSuccess: (Item) -> Unit, onFailure: 
         }
     })
 }
+
+fun deleteItemFromFirebase(
+    sku: String,
+    onSuccess: () -> Unit,
+    onFailure: (Exception) -> Unit
+) {
+    val itemRef: DatabaseReference = itemsRef.child(sku)
+
+    itemRef.removeValue()
+        .addOnSuccessListener {
+            onSuccess()
+        }
+        .addOnFailureListener { exception ->
+            onFailure(exception)
+        }
+}
+

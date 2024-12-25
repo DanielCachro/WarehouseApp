@@ -60,7 +60,7 @@ fun StartingScreen(navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                onClick = { navController.navigate(Routes.itemListScreen) },
+                onClick = { navController.navigate(Routes.itemListScreen+"/edit") },
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(50))
@@ -71,7 +71,7 @@ fun StartingScreen(navController: NavController) {
             }
 
             Button(
-                onClick = { /* Handle action for smaller button 2 */ },
+                onClick = { navController.navigate(Routes.itemListScreen+"/delete") },
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(50))
