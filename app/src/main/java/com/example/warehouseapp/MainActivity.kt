@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WarehouseAppTheme {
+            WarehouseAppTheme(darkTheme = false, dynamicColor = false) {
                 MainScreen()
             }
         }
@@ -61,7 +61,7 @@ fun MainScreen() {
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    WarehouseAppTheme {
+    WarehouseAppTheme(darkTheme = false, dynamicColor = false) {
         MainScreen()
     }
 }
