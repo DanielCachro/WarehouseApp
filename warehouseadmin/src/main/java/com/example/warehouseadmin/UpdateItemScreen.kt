@@ -13,7 +13,7 @@ fun UpdateItemScreen(navController: NavController, sku: String) {
             addToFirebase(
                 item = item,
                 onSuccess = {
-                    Log.d("AddItemScreen", "Item successfully added to Firebase: $item")
+                    Log.d("AddItemScreen", "Item successfully modified in Firebase: $item")
                     navController.popBackStack()
                 },
                 onFailure = { exception ->

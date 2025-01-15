@@ -16,7 +16,7 @@ fun MyAppNavigation() {
         }
         composable(Routes.itemListScreen + "/{mode}") {
             val mode = it.arguments?.getString("mode")
-           ItemListScreen(navController, mode?: "list")
+           ItemListScreen(navController, mode?: "edit")
         }
         composable(Routes.updateItemScreen + "/{sku}") {
             val sku = it.arguments?.getString("sku")
